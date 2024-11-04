@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drupal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: drupal
+  template:
+    metadata:
+      labels:
+        app: drupal
+    spec:
+      containers:
+      - image: bitnami/drupal
+        name: drupal
+        env:
+        - name: DRUPAL_DATABASE_HOST
+          value: mysql
+        - name: DRUPAL_DATABASE_NAME
+          value: drupal
+        - name: DRUPAL_DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: drupal-secret
+              key: drupal-db-user
+        - name: DRUPAL_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: drupal-secret
+              key: drupal-db-password
+        - name: DRUPAL_DATA_TO_PERSIST
+          value: "sites/ themes/ modules/ profiles/"
+        - name: DRUPAL_SKIP_BOOTSTRAP
+          value: "yes"
+        - name: DRUPAL_HASH_SALT
+          value: "f9a68353301c29203652dbb79ffd14a220d8511d6423897cb5bd8a5e04ee56d8"
+        - name: DRUPAL_CONFIG_SYNC_DIR
+          value: "/var/www/html/sites/default/files/config"
+        ports:
+        - containerPort: 8080
+          name: drupal
+        volumeMounts:
+        - name: drupal-storage
+          mountPath: /var/www/html/modules
+          subPath: modules
+        - name: drupal-storage
+          mountPath: /var/www/html/profiles
+          subPath: profiles
+        - name: drupal-storage
+          mountPath: /var/www/html/sites
+          subPath: sites
+        - name: drupal-storage
+          mountPath: /var/www/html/themes
+          subPath: themes
+        - name: drupal-storage
+          mountPath: /var/www/html/sites/default/files/config
+          subPath: config
+      volumes:
+      - name: drupal-storage
+        persistentVolumeClaim:
+          claimName: drupal-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: drupal
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: drupal
+  type: ClusterIP
+          
