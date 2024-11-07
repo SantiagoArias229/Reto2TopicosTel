@@ -576,14 +576,15 @@ Verificar en el sitio web en mi caso reto2-toptel.site para ver si funciono la i
 Con el proceso de instalación realizado la pagina web ya queda configurada para el usuario por lo que realmente, no necesita mas que empezar a usar el servicio. Se deja un tutorial https://www.youtube.com/watch?v=vCp9vFKKDgI&list=PLDbrnXa6SAzVLc19x0x0XPw8Fool9iRMW&ab_channel=dfbastidas de como puede usar el servicio de Drupal , algo que ya va por fuera del ejercicio.
 
 
-## 6. Referencias
+## 5. Referencias
 
 1. **Apasoft Training.** [Despliegue de Aplicaciones en Kubernetes - Video 7](https://www.youtube.com/watch?v=1wnbPZsc16I&list=PLkqaOL-oB94HAIRkA_5qdqk-x-1Hgo4i2&index=7&ab_channel=ApasoftTraining). *YouTube*. Accedido el 6 de noviembre de 2024.
 
 2. **Shubham K. Sawant.** "Deploy Drupal App on Kubernetes." *Medium*. Disponible en: [https://shubhamksawant.medium.com/deploy-drupal-app-on-kubernetes-a56244e514ca](https://shubhamksawant.medium.com/deploy-drupal-app-on-kubernetes-a56244e514ca). Accedido el 6 de noviembre de 2024.
 
 3. **st0263eafit.** "eks-wp." *GitHub*. Disponible en: [https://github.com/st0263eafit/st0263-242/tree/main/eks-wp](https://github.com/st0263eafit/st0263-242/tree/main/eks-wp). Accedido el 6 de noviembre de 2024.
-Por ultimo mi Ingenio y mas de 35 horas de trabajo. Este ha sido el trabajo por mucho al que le he dedicado más tiempo en mi carrera universitaria(todo por solucionar un problema que no se puede solucionar) .
+
+4. **Yo mismo** Por ultimo mi Ingenio y mas de 35 horas de trabajo. Este ha sido el trabajo por mucho al que le he dedicado más tiempo en mi carrera universitaria(todo por solucionar un problema que no se puede solucionar) .
 ---
 
 
