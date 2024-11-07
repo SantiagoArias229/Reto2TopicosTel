@@ -383,24 +383,207 @@ Estos parámetros aseguran que la infraestructura esté correctamente configurad
 
 ### 4.4. Despliegue del Servidor
 
-*Explica los pasos necesarios para lanzar el servidor en el ambiente de producción.*
+#### 1.Aplicar el Cluster Issuer:
+
+
+ ```powershell
+kubectl apply -f cluster-issuer.yaml
+```
+#### 2.Verificar el Cluster Issuer:
+
+```powershell
+kubectl get clusterissuer
+```
+Debería salir:
+```powershell
+NAME               READY   AGE
+letsencrypt-prod   True    30s
+```
+![image](https://github.com/user-attachments/assets/b4ca2a40-d4d1-4a42-b26b-951ecf41f840)
+
+#### 3.Crear el StorageClass del EFS:
+
+```powershell
+kubectl apply -f efs-storageclass.yaml
+```
+#### 4.Verificar el StorageClass del EFS:
+
+Debería salir:
+```powershell
+kubectl get storageclass
+```
+Debería salir:
+```powershell
+NAME            PROVISIONER         RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+efs-sc          efs.csi.aws.com     Delete          Immediate           false                  10s
+```
+![image](https://github.com/user-attachments/assets/848236ad-da56-474d-bfc3-4d49185bb308)
+
+#### 5.Crear los secrets:
+```powershell
+kubectl apply -f mysql-secret.yaml
+kubectl apply -f drupal-secret.yaml
+```
+#### 6.Verificar los secrets:
+
+```powershell
+kubectl get secrets
+```
+
+Debería salir:
+```powershell
+NAME                   TYPE                                  DATA   AGE
+mysql-secret           Opaque                                3      5s
+drupal-secret          Opaque                                2      5s
+```
+![image](https://github.com/user-attachments/assets/a969d75a-4723-4e86-89bf-25c2b113cc9f)
+
+#### 6.Crear los PV y los PVC:
+
+```powershell
+kubectl apply -f mysql-pv-pvc.yaml
+kubectl apply -f drupal-pv-pvc.yaml
+```
+#### 7.Verificar los PV:
+```powershell
+kubectl get pv
+```
+Debería salir:
+```powershell
+NAME         CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM               STORAGECLASS   REASON   AGE
+mysql-pv     20Gi       RWO            Retain           Bound    default/mysql-pvc   efs-sc                  5s
+drupal-pv    10Gi       RWX            Retain           Bound    default/drupal-pvc  efs-sc                  5s
+```
+#### 8.Verificar los PVC:
+```powershell
+kubectl get pvc
+```
+
+Debería salir:
+```powershell
+NAME          STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mysql-pvc     Bound    mysql-pv   20Gi       RWO            efs-sc         5s
+drupal-pvc    Bound    drupal-pv  10Gi       RWX            efs-sc         5s
+```
+
+![image](https://github.com/user-attachments/assets/85c01f04-a29f-41f7-87b5-fc1e92909eb5)
+
+#### 9.Desplegar MYSQL:
+```powershell
+kubectl apply -f mysql-deployment.yaml
+```
+![image](https://github.com/user-attachments/assets/222eb3ac-c34b-4378-85be-c6ef9c60d68d)
+
+#### 10.Verificar MYSQL:
+```powershell
+kubectl get pods -l app=mysql
+```
+Debería salir:
+```powershell
+NAME                     READY   STATUS    RESTARTS   AGE
+mysql-xyz123             1/1     Running   0          10s
+```
+
+```powershell
+kubectl logs deployment/mysql
+```
+Debería salir:
+```powershell
+[Entrypoint] MySQL Docker Image 8.0.XX-XX
+[Entrypoint] Initializing database
+...
+[Server] ready for connections.
+```
+#### 11.Desplegar Drupal:
+```powershell
+kubectl apply -f drupal-deployment.yaml
+```
+#### 12.Verificar Drupal:
+```powershell
+kubectl get pods -l app=drupal
+```
+Debería salir:
+```powershell
+NAME                      READY   STATUS    RESTARTS   AGE
+drupal-abc123             1/1     Running   0          10s
+```
+
+```powershell
+kubectl logs deployment/drupal
+```
+
+Debería salir:
+```powershell
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name
+...
+[notice] Apache/2.4.XX (Unix) configured -- resuming normal operations
+```
+#### 13.Crear el Ingress:
+```powershell
+kubectl apply -f drupal-ingress.yaml
+```
+#### 14.Verificar el Ingress:
+```powershell
+kubectl get ingress
+```
+Debería salir:
+```powershell
+NAME             CLASS    HOSTS             ADDRESS        PORTS     AGE
+drupal-ingress   <none>   reto2-toptel.site   x.x.x.x        80, 443   5s
+```
+#### 15.Verificar certificado TLS:
+
+```powershell
+kubectl describe certificate reto2-toptel-site-tls
+```
+
+Debería salir:
+```powershell
+...
+Status:
+  Conditions:
+    Type:    Ready
+    Status:  True
+...
+Not After:  2024-01-01T00:00:00Z
+```
+#### 16.Escalar Drupal a Dos Replicas:
+```powershell
+kubectl scale deployment drupal --replicas=2
+```
+
+#### 17.Verificar las Dos Replicas de Drupal:
+```powershell
+kubectl get pods -l app=drupal
+```
+Debería salir:
+```powershell
+NAME                      READY   STATUS    RESTARTS   AGE
+drupal-abc123             1/1     Running   0          2m
+drupal-def456             1/1     Running   0          10s
+```
+![image](https://github.com/user-attachments/assets/24913304-443e-4901-b7d6-de38127fd63e)
+
+
+#### 18.Entrar al sitio web y observar las instancias de drupal:
+Verificar en el sitio web en mi caso reto2-toptel.site para ver si funciono la instalación.
+
+![image](https://github.com/user-attachments/assets/de95bf0b-870c-4fe0-8b9a-a9e256fd137a)
+
 
 ### 4.5. Guía de Usuario
 
-### 4.6. Otras Configuraciones
+Con el proceso de instalación realizado la pagina web ya queda configurada para el usuario por lo que realmente, no necesita mas que empezar a usar el servicio. Se deja un tutorial https://www.youtube.com/watch?v=vCp9vFKKDgI&list=PLDbrnXa6SAzVLc19x0x0XPw8Fool9iRMW&ab_channel=dfbastidas de como puede usar el servicio de Drupal , algo que ya va por fuera del ejercicio.
 
----
-
-## 5. Pantallazos (Opcionales)
-
-*Añade aquí capturas de pantalla relevantes que complementen la documentación.*
-
----
 
 ## 6. Referencias
 
-*Incluye todas las referencias y recursos utilizados durante el desarrollo del proyecto.*
+1. **Apasoft Training.** [Despliegue de Aplicaciones en Kubernetes - Video 7](https://www.youtube.com/watch?v=1wnbPZsc16I&list=PLkqaOL-oB94HAIRkA_5qdqk-x-1Hgo4i2&index=7&ab_channel=ApasoftTraining). *YouTube*. Accedido el 6 de noviembre de 2024.
 
+2. **Shubham K. Sawant.** "Deploy Drupal App on Kubernetes." *Medium*. Disponible en: [https://shubhamksawant.medium.com/deploy-drupal-app-on-kubernetes-a56244e514ca](https://shubhamksawant.medium.com/deploy-drupal-app-on-kubernetes-a56244e514ca). Accedido el 6 de noviembre de 2024.
+
+3. **st0263eafit.** "eks-wp." *GitHub*. Disponible en: [https://github.com/st0263eafit/st0263-242/tree/main/eks-wp](https://github.com/st0263eafit/st0263-242/tree/main/eks-wp). Accedido el 6 de noviembre de 2024.
+Por ultimo mi Ingenio y mas de 35 horas de trabajo. Este ha sido el trabajo por mucho al que le he dedicado más tiempo en mi carrera universitaria(todo por solucionar un problema que no se puede solucionar) .
 ---
 
 
