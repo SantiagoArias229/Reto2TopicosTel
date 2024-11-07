@@ -584,7 +584,7 @@ Con el proceso de instalación realizado la pagina web ya queda configurada para
 
 3. **st0263eafit.** "eks-wp." *GitHub*. Disponible en: [https://github.com/st0263eafit/st0263-242/tree/main/eks-wp](https://github.com/st0263eafit/st0263-242/tree/main/eks-wp). Accedido el 6 de noviembre de 2024.
 
-4. **Yo mismo** Por ultimo mi Ingenio y mas de 35 horas de trabajo. Este ha sido el trabajo por mucho al que le he dedicado más tiempo en mi carrera universitaria(todo por solucionar un problema que no se puede solucionar) .
+4. **Nosotrs mismos** Por nuestro mi Ingenio y mas de 35 horas de trabajo. Este ha sido el trabajo por mucho al que le hemos dedicado más tiempo en nuestra carrera universitaria(todo por solucionar un problema que no se puede solucionar) .
 ---
 
 
